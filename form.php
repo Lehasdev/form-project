@@ -52,9 +52,23 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
     <label class="last" for="afternoon">День (12:00 - 18:00)</label><br>
     <input class="last" type="checkbox" id="evening" name="contact_interval[]" value="Вечер">
     <label class="last" for="evening">Вечер (18:00 - 21:00)</label><br>
-
-
      <!-- Блок с вопросами -->
+    <div class="list-questions">
+        <h2>Ответьте на вопросы:</h2>
+    <?php $el= \lib\FormListHandler::toDrawSelect(5);
+    for($i=0;$i<count($el);$i++):?>
+        <label class="last" for="<?=$el["code"][$i]?>"><?=$el["name"][$i];?>:</label><br>
+        <select name="dynamic_field_<?=$el["code"][$i]?>" id="<?=$el["code"][$i]?>">
+            <?php $prop= \lib\FormListHandler::toDrawOptions($el["code"][$i]);?>
+            <option value="">--Выберите ответ--</option>
+           <?php foreach ($prop as $item):?>
+            <option value="<?=$el["name"][$i]?><?=$item?>"><?=$item?></option>
+            <?php endforeach;?>
+        </select><br>
+    <?php endfor;?>
+
+
+    </div>
 <div class="file-conteiner">
     <label for="file">Выберите файл(ы):</label><br>
     <input class="fileB" type="file" id="file" name="uploaded_files[]" multiple><br><br>

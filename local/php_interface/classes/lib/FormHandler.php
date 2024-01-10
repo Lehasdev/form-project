@@ -19,8 +19,18 @@ class FormHandler
         return trim(strip_tags($data));
     }
     public function processForm($formData)
-    {
-        try {
+    {   //ищу динамически формируемое имя формы с вопросами, добавляю проверку вопросов на пустоту
+        try{
+        $arProperty =[];
+        foreach ($formData as $name => $value) {
+            if (strpos($name, "dynamic_field_") === 0) {
+                if(empty($value)) throw new \Exception('Ответьте на вопросы.');
+                array_push($arProperty, $value);
+            }
+        }
+
+        $formData['answers'] = $arProperty;
+
             // Получаем данные из формы
             $name = $this->escape($formData['name']);
             $surname = $this->escape($formData['surname']);
@@ -29,6 +39,7 @@ class FormHandler
             $email = $this->escape($formData['email']);
             $comment = $this->escape($formData['comment']);
             $connect = $this->escape($formData['connect']);
+            $questions = implode(',  ', $formData['answers']);
             $contactInterval = implode(', ', $formData['contact_interval']); // массив в строку через запятую
         }catch (\Exception $e){
            return $e->getMessage();
@@ -39,7 +50,7 @@ class FormHandler
         $uploadedFiles = $this->handleUploadedFiles();
 
         // Записываем данные в инфоблок
-        $this->addToInfoblock($name, $surname, $patronymic, $phone, $email, $comment, $connect, $contactInterval, $uploadedFiles);
+        $this->addToInfoblock($name, $surname, $patronymic, $phone, $email, $comment, $connect, $contactInterval, $questions, $uploadedFiles);
 
         return true;
     }
@@ -83,7 +94,7 @@ class FormHandler
 
 
 
-    private function addToInfoblock($name, $surname, $patronymic, $phone, $email, $comment, $connect, $contactInterval, $uploadedFiles)
+    private function addToInfoblock($name, $surname, $patronymic, $phone, $email, $comment, $connect, $contactInterval, $questions, $uploadedFiles)
     {
         // Записываем данные в инфоблок
         $el = new \CIBlockElement();
@@ -101,6 +112,7 @@ class FormHandler
                 'COMMENT' => $comment,
                 'CONNECT' => $connect,
                 'CONTACT_INTERVAL' => $contactInterval,
+                'QUESTIONS' => $questions,
                 'UPLOADED_FILES' => $uploadedFiles,
             ],
         ];

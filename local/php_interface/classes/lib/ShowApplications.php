@@ -7,13 +7,13 @@ class ShowApplications
 
     //Заголовки для таблицы заявок
     const HEADERS =["Имя","Фамилия","Отчество","Телефон", "Почта",
-        "Комментарий", "Связь", "Интервал", "Файлы", "Статус"];
+        "Комментарий", "Связь", "Интервал", "Ответы на вопросы","Файлы", "Статус"];
     //Статичный метод для отрисовки таблицы без создания объекта. принимает id блока и включает проверку доступа
     public static function printApplications($iblock,$permission)
     {
         $arFilter= ["IBLOCK_ID"=>$iblock, "CHECK_PERMISSIONS" => $permission];
         $arSelect =["PROPERTY_NAME","PROPERTY_SURNAME","PROPERTY_PATRONYMIC","PROPERTY_PHONE","PROPERTY_EMAIL","PROPERTY_COMMENT",
-        "PROPERTY_CONNECT","PROPERTY_CONTACT_INTERVAL","PROPERTY_UPLOADED_FILES","PROPERTY_STATUS_VALUE"];
+        "PROPERTY_CONNECT","PROPERTY_CONTACT_INTERVAL","PROPERTY_QUESTIONS","PROPERTY_UPLOADED_FILES","PROPERTY_STATUS_VALUE"];
         $res = \CIBlockElement::GetList( [], $arFilter, false,false, $arSelect);
         while ($el=$res->GetNext()) {
             echo '<div class="scroll">';
@@ -27,8 +27,8 @@ class ShowApplications
             while ($el = $res->GetNext()) {
                 echo '<tr>';
                 foreach ($arSelect as $prop) {
-                    //Модифицирую имена свойств для получения свойства элементов инфоблока
-                    echo '<td>' . $el[$prop . '_VALUE'] . '</td>';
+                    //Модифицирую имена свойств для получения свойства элементов инфоблока, добавляю перенос строки
+                    echo '<td>'. wordwrap($el[$prop . '_VALUE'], 50, "\n", true) . '</td>';
 
                 }
                 echo '</tr>';
