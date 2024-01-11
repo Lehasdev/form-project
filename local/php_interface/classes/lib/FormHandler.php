@@ -21,15 +21,15 @@ class FormHandler
     public function processForm($formData)
     {   //ищу динамически формируемое имя формы с вопросами, добавляю проверку вопросов на пустоту
         try{
-        $arProperty =[];
-        foreach ($formData as $name => $value) {
-            if (strpos($name, "dynamic_field_") === 0) {
-                if(empty($value)) throw new \Exception('Ответьте на вопросы.');
-                array_push($arProperty, $value);
+            $arProperty =[];
+            foreach ($formData as $name => $value) {
+                if (strpos($name, "dynamic_field_") === 0) {
+                    if(empty($value)) throw new \Exception('Ответьте на вопросы.');
+                    array_push($arProperty, $value);
+                }
             }
-        }
 
-        $formData['answers'] = $arProperty;
+            $formData['answers'] = $arProperty;
 
             // Получаем данные из формы
             $name = $this->escape($formData['name']);
@@ -42,21 +42,21 @@ class FormHandler
             $questions = implode(',  ', $formData['answers']);
             $contactInterval = implode(', ', $formData['contact_interval']); // массив в строку через запятую
         }catch (\Exception $e){
-           return $e->getMessage();
+            return $e->getMessage();
 
 
         }
         // Обработка загруженных файлов
-        $uploadedFiles = $this->handleUploadedFiles();
+        $uploaded = $this->handleUploadedFiles();
 
         // Записываем данные в инфоблок
-        $this->addToInfoblock($name, $surname, $patronymic, $phone, $email, $comment, $connect, $contactInterval, $questions, $uploadedFiles);
+        $this->addToInfoblock($name, $surname, $patronymic, $phone, $email, $comment, $connect, $contactInterval, $questions, $uploaded);
 
         return true;
     }
 
 
-        private function handleUploadedFiles()
+    private function handleUploadedFiles()
     {
         // Папка, куда будут перемещены загруженные файлы
         $uploadDir = $_SERVER['DOCUMENT_ROOT'] . '/uploads/';
@@ -86,15 +86,18 @@ class FormHandler
 
                 // Сохраняем путь к файлу
                 $uploadedFiles[] = $filePath;
+                }
+
+            foreach ($uploadedFiles as $file){
+                $more_src[] = \CFile::MakeFileArray($file);
             }
         }
-
-        return $uploadedFiles;
+        return $more_src;
     }
 
 
 
-    private function addToInfoblock($name, $surname, $patronymic, $phone, $email, $comment, $connect, $contactInterval, $questions, $uploadedFiles)
+    private function addToInfoblock($name, $surname, $patronymic, $phone, $email, $comment, $connect, $contactInterval, $questions, $uploaded)
     {
         // Записываем данные в инфоблок
         $el = new \CIBlockElement();
@@ -113,7 +116,7 @@ class FormHandler
                 'CONNECT' => $connect,
                 'CONTACT_INTERVAL' => $contactInterval,
                 'QUESTIONS' => $questions,
-                'UPLOADED_FILES' => $uploadedFiles,
+                'UPLOADED_FILES' => $uploaded,
             ],
         ];
 
@@ -122,4 +125,3 @@ class FormHandler
         return $elementId;
     }
 }
-
