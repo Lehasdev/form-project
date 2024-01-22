@@ -1,19 +1,25 @@
 <?php
 
 namespace lib;
+
 class FormHandler
 {
     private $iblockId;
-    public static $messageDefault = "Заявка успешно оставлена! Предлогаем оставить еще одну;)";
+
+    public static $messageDefault;
     public $message = "";
     public function __construct($iblockId)
     {
         $this->iblockId = $iblockId;
+
+    }
+    public static function init() {
+        self::$messageDefault = GetMessage('MSG_DEFAULT');
     }
     private function escape($data) {
         // Проверка на пустоту
         if (empty($data)) {
-            throw new \Exception('Заполните все поля.');
+            throw new \Exception(GetMessage("MSG_EXCEPTION_EMPTY"));
         }
 
         return trim(strip_tags($data));
@@ -24,7 +30,7 @@ class FormHandler
             $arProperty =[];
             foreach ($formData as $name => $value) {
                 if (strpos($name, "dynamic_field_") === 0) {
-                    if(empty($value)) throw new \Exception('Ответьте на вопросы.');
+                    if(empty($value)) throw new \Exception(GetMessage("MSG_EXCEPTION_EMPTY_ANSWERS"));
                     array_push($arProperty, $value);
                 }
             }
@@ -32,8 +38,8 @@ class FormHandler
             $formData['answers'] = $arProperty;
 
             // Получаем данные из формы
-            $name = $this->escape($formData['name']);
-            $surname = $this->escape($formData['surname']);
+            $name = $this->escape($formData['namei']);
+            $surname = $this->escape($formData['surnamei']);
             $patronymic = $this->escape($formData['patronymic']);
             $phone = $this->escape($formData['phone']);
             $email = $this->escape($formData['email']);
@@ -43,18 +49,17 @@ class FormHandler
             $contactInterval = implode(', ', $formData['contact_interval']); // массив в строку через запятую
         }catch (\Exception $e){
             return $e->getMessage();
-
-
         }
         // Обработка загруженных файлов
         $uploaded = $this->handleUploadedFiles();
 
         // Записываем данные в инфоблок
-        $this->addToInfoblock($name, $surname, $patronymic, $phone, $email, $comment, $connect, $contactInterval, $questions, $uploaded);
+        $result = $this->addToInfoblock($name, $surname, $patronymic, $phone, $email, $comment, $connect, $contactInterval, $questions, $uploaded);
 
-        return true;
+        return !empty($result);
+
+
     }
-
 
     private function handleUploadedFiles()
     {
@@ -86,7 +91,7 @@ class FormHandler
 
                 // Сохраняем путь к файлу
                 $uploadedFiles[] = $filePath;
-                }
+            }
 
             foreach ($uploadedFiles as $file){
                 $more_src[] = \CFile::MakeFileArray($file);
@@ -100,7 +105,7 @@ class FormHandler
     private function addToInfoblock($name, $surname, $patronymic, $phone, $email, $comment, $connect, $contactInterval, $questions, $uploaded)
     {
         // Записываем данные в инфоблок
-        $el = new \CIBlockElement();
+        $el = new \CIBlockElement;
 
         $fields = [
             'IBLOCK_ID' => $this->iblockId,

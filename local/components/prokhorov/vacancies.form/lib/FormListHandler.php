@@ -18,17 +18,34 @@ class FormListHandler
         return $value;
     }
     //метод для вывода имени и кода свойств
-    public static function toDrawSelect($iblock)
+    public static function toDrawSelect()
     {
         $prop =["name" => [],
             "code" => []
         ];
-        self::$infoblockId = $iblock;
+
         $res = \CIBlockProperty::GetList([], ["IBLOCK_ID" => self::$infoblockId]);
         while ($el = $res->GetNext()) {
+
             array_push($prop["name"], $el["NAME"]);
             array_push($prop["code"], $el["CODE"]);
 
         }
         return $prop;
-    }}
+    }
+    //метод для вывода Названия вакансии
+    public static function toDrawQuestionsBlockName($iblock)
+    {
+
+        self::$infoblockId = $iblock;
+        $res = \CIBlockElement::GetList([], ["IBLOCK_ID" => self::$infoblockId],false,false,["NAME"]);
+        $el = $res->GetNext();
+        return $el["NAME"];
+    }
+    //метод проверки доступа для кнопки со списком заявок
+    public static function toCheckPermission($iblockId){
+        $permission = \CIBlock::GetPermission($iblockId);
+        if ($permission == "R"||$permission == "X") return true;
+    }
+
+}
