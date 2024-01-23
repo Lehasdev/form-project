@@ -2,17 +2,19 @@
 
 namespace lib;
 
+use Bitrix\Main\Localization\Loc;
+
 
 class ShowApplications
 {
 
     //Заголовки для таблицы заявок
     const HEADERS =
-        ["Имя","Фамилия","Отчество","Телефон", "Почта",
-            "О себе", "Связь", "Интервал", "Ответы на вопросы", "Статус"];
+        ["NAME","SURNAME","PATRONYMIC","PHONE", "MAIL",
+            "ABOUT", "CONNECT", "INTERVAL", "QUESTIONS_ANSWERS", "STATUS"];
     private static function getLocalizedName($key)
     {
-        return GetMessage($key);
+        return Loc::GetMessage($key);
     }
 
     //Статичный метод для отрисовки таблицы без создания объекта. принимает id блока и включает проверку доступа
@@ -39,7 +41,7 @@ class ShowApplications
                     echo '<tr>';
                         //Отрисовка заголовков таблицы
                         foreach (self::HEADERS as $prop) {
-                            echo '<th class="table-th">' . $prop.'</th>';
+                            echo '<th class="table-th">' . self::getLocalizedName($prop).'</th>';
                     }
                     echo '</tr>';
 
