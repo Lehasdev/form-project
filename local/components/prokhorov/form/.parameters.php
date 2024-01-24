@@ -56,21 +56,5 @@ $arComponentParameters = array(
             'REFRESH' => 'Y',
         ),
 
-        'VARIABLE_ALIASES' => array(
-            'list' => array(),
-            'form' => array(),
-        ),
-        'SEF_MODE' => array(
-
-            'list' => array(
-                'NAME' => '',
-                'DEFAULT' => '',
-            ),
-            'form' => array(
-                'NAME' => '',
-                'DEFAULT' => '',
-            ),
-        ),
-
     )
 );
