@@ -2,16 +2,14 @@
 
 if (!defined('B_PROLOG_INCLUDED') || B_PROLOG_INCLUDED!==true) die();
 
+$arVariables = [];
+// массив имен переменных, которые компонент может получать из запроса
+$arComponentVariables = ['list','form'];
 
-    $arVariables = array();
-    $arComponentVariables = array(  // массив имен переменных, которые компонент может получать из запроса
-);
-    $arDefaultVariableAliases = ['list' => 'list','form' => 'form'];
-    $arVariableAliases = CComponentEngine::MakeComponentVariableAliases(
-    $arDefaultVariableAliases,
-    $arParams['VARIABLE_ALIASES']
-);
-    $arParams['path']= $arDefaultVariableAliases["list"];
+$arVariableAliases=[]; //массив псевдонимов
+
+$arParams['path']= $arComponentVariables[0];
+
 CComponentEngine::InitComponentVariables(
     false,
     $arComponentVariables, // массив имен переменных, которые компонент может получать из запроса
@@ -19,13 +17,11 @@ CComponentEngine::InitComponentVariables(
     $arVariables           // массив, в котором возвращаются восстановленные переменные
 );
 
-    $componentPage = '';
-    if (isset($arVariables['list']))
-        $componentPage = 'list';
-    else
-        $componentPage = 'form';
+$componentPage = '';
+if (isset($arVariables['list']))
+    $componentPage = 'list';
+else
+    $componentPage = 'form';
 
 
 $this->IncludeComponentTemplate($componentPage);
-
-
